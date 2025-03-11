@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ziota - Educational Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;700&display=swap" rel="stylesheet">
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Arial", sans-serif;
+        }
+
+        body {
+            background-color: #0a0a0a;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            height: 100vh;
+        }
+
+        /* Header */
+        header {
+            width: 100%;
+            background: linear-gradient(to right, #1e3c72, #2a5298);
+            padding: 20px;
+            text-align: center;
+            font-size: 4rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            box-shadow: 0 4px 10px rgba(22, 1, 1, 0.4);
+        }
+
+        /* Main Section */
+        .content {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            width: 100%;
+        }
+
+        .letter-i {
+            width: 60vh;
+            height: 60vh;
+        }
+
+        /* Form Styling */
+        #form-wrapper {
+            position: absolute;
+            right: 8%;
+            width: 900px;
+            background: #fff;
+            border-radius: 5px;
+            padding: 100px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            color: #000;
+        }
+
+        .join {
+            color: #222;
+            font-size: 100px;
+            font-weight: 700;
+            text-shadow: 1px 0 1px #777;
+        }
+
+        .access-buttons {
+            margin-top: 30px;
+        }
+
+        .access-buttons button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 60px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .personal-btn { background: #e77e33; color: white; }
+        .general-btn { background: #1daee3; color: white; }
+
+        .social-buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 25px;
+        }
+
+        .social-buttons a {
+            text-decoration: none;
+            color: white;
+            padding: 20px 25px;
+            border-radius: 15px;
+            margin: 0 10px;
+            font-weight: 900;
+        }
+
+        .instagram { background: #d62976; }
+        .linkedin { background: #0077b5; }
+        .twitter { background: #1da1f2; }
+
+        .forms {
+            margin-top: 20px;
+            display: flex;
+            font-weight:1000;
+            font-size:100px;
+        }
+
+        .forms input {
+            width: 100%;
+            height: 300 px;
+            font-size: 1000 px;
+            font-weight:1000;
+            border: 10px solid #d9d9d9;
+            padding: 30px;
+            margin-bottom: 15px;
+            outline: none;
+            border-radius: 10px;
+        }
+
+        .create-acc {
+            display: block;
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            background: #e77e33;
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 700;
+            margin-top: 20px;
+        }
+        .letter-i {
+            width: 60vh;
+            height: 60vh;
+        }
+
+        /* Footer */
+        footer {
+            width: 100%;
+            background: #222;
+            text-align: center;
+            padding: 10px;
+            font-size: 4rem;
+            opacity: 0.8;
+            letter-spacing: 1px;
+        }
+
+        /* Common Stroke Properties */
+        .cls-1 {
+            fill: none;
+            stroke: #fff;
+            stroke-width: 5px;
+            stroke-linecap: round;
+            stroke-dasharray: 1500;
+            animation: lines 4s infinite;
+        }
+
+        /* Stroke Colors */
+        .dot { stroke-dasharray: 500; stroke: var(--color); }
+        .stem { stroke: var(--color); }
+
+        /* Animation Delays */
+        .cls-1:nth-child(1) { animation-delay: calc(0.5s * 1); }
+        .cls-1:nth-child(2) { animation-delay: calc(0.5s * 2); }
+        .cls-1:nth-child(3) { animation-delay: calc(0.5s * 3); }
+        .cls-1:nth-child(4) { animation-delay: calc(0.5s * 4); }
+        .cls-1:nth-child(5) { animation-delay: calc(0.5s * 5); }
+        .cls-1:nth-child(6) { animation-delay: calc(0.5s * 6); }
+
+        /* SVG Animation */
+        @keyframes lines {
+            100% { stroke-dashoffset: 3000; }
+        }
+
+        /* Shadow Animation Styles */
+        @function makelongshadow($color, $color2, $color3, $color4, $color5) {
+            $val: 0px 0px $color;
+            @for $i from 1 through 20 {
+                $val: #{$val}, -#{$i}px #{$i}px #{$color};
+            }
+            @for $i from 21 through 40 {
+                $val: #{$val}, -#{$i}px #{$i}px #{$color2};
+            }
+            @for $i from 41 through 60 {
+                $val: #{$val}, -#{$i}px #{$i}px #{$color3};
+            }
+            @for $i from 61 through 80 {
+                $val: #{$val}, -#{$i}px #{$i}px #{$color4};
+            }
+            @for $i from 81 through 100 {
+                $val: #{$val}, -#{$i}px #{$i}px #{$color5};
+            }
+            @return $val;
+        }
+
+        @keyframes animateShadow {
+            0%   { text-shadow: makelongshadow(red, #313134, #3e3e40, #4a4a4d, #575759); }
+            20%  { text-shadow: makelongshadow(red, #3e3e40, #4a4a4d, #575759, #252526); }
+            40%  { text-shadow: makelongshadow(#3e3e40, #4a4a4d, #575759, #252526, #313134); }
+            60%  { text-shadow: makelongshadow(#4a4a4d, #575759, #252526, #313134, #3e3e40); }
+            80%  { text-shadow: makelongshadow(#575759, #252526, #313134, #3e3e40, #4a4a4d); }
+            100% { text-shadow: makelongshadow(red, #313134, #3e3e40, #4a4a4d, #575759); }
+        }
+
+        .site__main {
+            padding: 100px;
+            margin: 0px;
+            width: 90vw;
+            font-weight: 1000;
+            line-height: 0.6;
+            font-size: 1000px;
+            text-align: left;
+            font-size: 4rem;
+            color: #fcfdff;
+            font-family: 'Georgia';
+            text-shadow: makelongshadow(white, white, #3e3e40, #4a4a4d, #575759);
+            animation-name: animateShadow;
+            animation-duration: 1s;
+            animation-iteration-count: infinite;
+        }
+
+
+        /* Side Slide Menu */
+        .menu-icon {
+            position: absolute;
+            right: 20px;
+            top: 2%;
+            transform: translateY(-50%);
+            font-size: 10 rem;
+            cursor: pointer;
+        }
+
+        .menu {
+            position: fixed;
+            top: 0;
+            right: -250px;
+            width: 250px;
+            height: 100%;
+            background: #111;
+            transition: right 0.3s;
+            padding-top: 60px;
+        }
+
+        .menu a {
+            padding: 15px;
+            text-decoration: none;
+            color: #fff;
+            display: block;
+            transition: 0.3s;
+        }
+
+        .menu a:hover {
+            background: #575757;
+        }
+
+        .menu.active {
+            right: 0;
+        }
+    </style>
+    <script>
+        let formVisible = false;
+        function togglePersonalForm() {
+            const form = document.querySelector('.forms');
+            if (formVisible) {
+                form.style.display = 'none';
+            } else {
+                form.innerHTML = '<form action="" method="get" name="register">' +
+                                 '<input name="username" type="text" placeholder="Enter your username...">' +
+                                 '<input name="password" type="password" placeholder="Enter your password...">' +
+                                 '</form>' +
+                                 '<a class="create-acc" href="content.html">Submit</a>';
+                form.style.display = 'block';
+            }
+            formVisible = !formVisible;
+        }
+
+        function redirectToGeneral() {
+            window.location.href = "#";
+        }
+        function toggleMenu() {
+            const menu = document.getElementById('sideMenu');
+            menu.classList.toggle('active');
+        }
+    </script>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        Ziota - Learn & Grow
+        <span class="menu-icon" onclick="toggleMenu()">&#9776;</span>
+    </header>
+
+    <!-- Side Menu -->
+    <div class="menu" id="sideMenu">
+        <a href="#">Home</a>
+        <a href="#">About</a>
+        <a href="#">Courses</a>
+        <a href="#">Contact</a>
+    </div>
+
+    <!-- Main Section -->
+    <main class="site__main">
+        <div>
+            <h1>
+                Struggling with last-minute exam prep? <br /><br/>
+                No worries!<br/><br/>
+                 Access top-quality study material, <br /><br/>
+                revision notes, and expert guidance – all in one place. <br /><br/>
+                Say goodbye to sleepless nights and ace your exams with confidence! <br /><br/>
+            </h1>
+        </div>
+    </main>
+    
+
+    <div class="content">
+        <svg class="letter-i" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 700">
+            <path class="cls-1 stem" style="--color: rgb(246, 9, 149)" d="M534,688c-21.86-.21-46.54-1.64-60.89-18.14-11.57-13.31-12.73-32.47-13.32-50.1q-3.09-92.09-6.16-184.16c-2-59.35-3.65-120.66,18.22-175.87a1078.09,1078.09,0,0,1-201.94,61.42c19.19-1.82,41.22-2.67,54.66,11.13,11,11.33,12.29,28.69,12.83,44.49q4.38,127.62,2.16,255.36c-.21,11.76-.66,24.21-7.08,34.07-10.83,16.63-32.76,19-50.79,20.49-4.64.37-25.91-.25-23.84,5.56,2.43,6.8,20.9,4.78,25.36,4.62q80.61-2.88,161.22-5.7C474.19,690.11,504.23,687.72,534,688Z"/>
+            <path class="cls-1 stem" style="--color: rgb(254, 219, 59)" d="M467.79,653.59c-10.4-22.45-10.49-48.11-10.39-72.85.41-107.63.84-215.47,11.61-322.56a560.3,560.3,0,0,1-228.84,67c28.68-8.32,80.6-14.86,94.58,11.52s8.15,97.66,9.11,127.5c1.6,49.55-10.71,104.47-9.11,154,.49,15,.77,27.26-4.14,41.4-7,20.1-24.22,19.47-43.69,28.06s-41.06,11.15-62.32,11.9c37.92-1.33,76.07-7.73,114-10q57.9-3.47,115.93-3.65,16.57,0,33.15.17c9.49.12,22.1-1.59,31,1.12-.68,9.24-24.07-3.46-27.88-6.09A68.81,68.81,0,0,1,467.79,653.59Z"/>
+            <path class="cls-1 dot" style="--color: rgb(88, 40, 215)" d="M378.7,89.91c-17.65,14.52-34.72,30.92-43.88,51.86S326,189.21,341,206.48c8.14,9.39,19.75,15.23,31.72,18.55,25.22,7,53.35,3.24,75.49-10.7s37.77-38,40.81-64c1.33-11.45.17-23.6-5.85-33.43-6.27-10.25-17-16.86-28-21.87-14.09-6.45-29.52-10.94-44.95-9.58s-30.85,9.36-38.26,23"/>
+        </svg>
+        <div id="form-wrapper">
+            <div class="join">Welcome!!</div>
+            <div class="social-buttons">
+                <a class="instagram" href="#">Instagram</a>
+                <a class="linkedin" href="#">LinkedIn</a>
+                <a class="twitter" href="#">Twitter</a>
+            </div>
+            <div class="access-buttons">
+                <button class="personal-btn" onclick="togglePersonalForm()">Personal Access</button>
+                <button class="general-btn" onclick="redirectToGeneral()">General Access</button>
+            </div>
+            <div class="forms"></div>
+        </div>
+    </div>
+    <footer>Ziota - Empowering Education & Innovation</footer>
+</body>
+</html>
