@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merged GIF & Animation with Notes</title>
+    <style>
+        /* Global Reset */
+        body, ol, ul, h1, h2, h3, h4, h5, h6, p, th, td, dl, dd, form, fieldset, legend, input, textarea, i, select {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Page Layout */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background-color: #2C3138;
+        }
+
+        /* Animated Card Container */
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 100px;
+            width: 60vw;
+            padding-bottom: 50px;
+        }
+
+        .box {
+            font-size: 40px;
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.3s ease-out;
+        }
+
+        .box:hover {
+            transform: translateY(-10px) scale(1.05);
+        }
+
+        .cover img {
+            width: 500px;
+            transition: all 0.3s ease-in-out;
+            border-radius: 20px;
+        }
+
+        /* Button Styling */
+        button {
+            cursor: pointer;
+            width: 350px;
+            height: 60px;
+            border-radius: 8px;
+            background-color: #2C3138;
+            color: white;
+            font-size: 22px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #008BFF;
+            transform: scale(1.05);
+        }
+
+        /* Text Area for Notes */
+        .image-notes {
+            width: 500px;
+            height: 500px;
+            margin-top: 10px;
+            padding: 10px;
+            font-size: 40px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            resize: none;
+            background-color: #fff;
+            color: #000;
+        }
+
+        /* Footer */
+        .dr {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            width: 100px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Animated Buttons Section -->
+    <div class="container">
+        <div class="box box-1">
+            <div class="cover">
+                <img src="https://cdn-icons-png.flaticon.com/512/2721/2721295.png" alt="ANN">
+            </div>
+            <button>ANN</button>
+            <textarea class="image-notes" placeholder="Write your notes here..." oninput="saveNote(this, 'ANN')"></textarea>
+        </div>
+
+        <div class="box box-2">
+            <div class="cover">
+                <img src="https://cdn-icons-png.flaticon.com/512/919/919852.png" alt="Python">
+            </div>
+            <button>Python</button>
+            <textarea class="image-notes" placeholder="Write your notes here..." oninput="saveNote(this, 'Python')"></textarea>
+        </div>
+
+        <div class="box box-3">
+            <div class="cover">
+                <img src="https://cdn-icons-png.flaticon.com/512/226/226777.png" alt="Java">
+            </div>
+            <button>Java</button>
+            <textarea class="image-notes" placeholder="Write your notes here..." oninput="saveNote(this, 'Java')"></textarea>
+        </div>
+
+        <div class="box box-4">
+            <div class="cover">
+                <img src="https://cdn-icons-png.flaticon.com/512/1087/1087840.png" alt="AI">
+            </div>
+            <button>AI</button>
+            <textarea class="image-notes" placeholder="Write your notes here..." oninput="saveNote(this, 'AI')"></textarea>
+        </div>
+
+        <div class="box box-5">
+            <div class="cover">
+                <img src="https://cdn-icons-png.flaticon.com/512/1260/1260655.png" alt="Statistics">
+            </div>
+            <button>Statistics</button>
+            <textarea class="image-notes" placeholder="Write your notes here..." oninput="saveNote(this, 'Statistics')"></textarea>
+        </div>
+
+        <div class="box box-6">
+            <div class="cover">
+                <img src="https://cdn-icons-png.flaticon.com/512/919/919826.png" alt="WT">
+            </div>
+            <button>WT</button>
+            <textarea class="image-notes" placeholder="Write your notes here..." oninput="saveNote(this, 'WT')"></textarea>
+        </div>
+    </div>
+
+    <!-- JavaScript for Auto-Saving Notes -->
+    <script>
+        function saveNote(textarea, key) {
+            localStorage.setItem(key, textarea.value);
+        }
+
+        window.onload = function () {
+            document.querySelectorAll(".image-notes").forEach(textarea => {
+                const key = textarea.previousElementSibling.innerText.trim();
+                textarea.value = localStorage.getItem(key) || "";
+            });
+        };
+    </script>
+
+</body>
+</html>
