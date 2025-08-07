@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/ziota.iml" filepath="$PROJECT_DIR$/.idea/ziota.iml" />
+    </modules>
+  </component>
+</project>

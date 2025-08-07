@@ -10,6 +10,7 @@
     "dev": "nodemon server.js",
     "build": "cd frontend && npm install && npm run build",
     "vercel-build": "npm install && cd frontend && npm install && npm run build",
+    "verify-deployment": "node verify-deployment.js",
     "test-deployment": "node scripts/test-deployment.js"
   },
   "dependencies": {

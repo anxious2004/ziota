@@ -20,18 +20,23 @@ const corsOptions = {
     origin: [
         'http://localhost:3000',
         'http://localhost:3001',
+        'http://localhost:5001',
         process.env.CLIENT_ORIGIN || 'http://localhost:3000',
         'https://ziota-datf03b4z-anxious2004s-projects.vercel.app',
         'https://zio-one.vercel.app',
         'https://zio.vercel.app',
         'https://zio1.vercel.app',
+        'https://ziota.vercel.app',
+        'https://ziota-app.vercel.app',
+        // Allow any Vercel deployments with regex patterns
         /\.vercel\.app$/,
-        // Allow any Vercel preview deployments
-        /https:\/\/.*\.vercel\.app$/
+        /https:\/\/.*\.vercel\.app$/,
+        /https:\/\/ziota.*\.vercel\.app$/,
+        /https:\/\/zio.*\.vercel\.app$/
     ],
     credentials: true, // Allow cookies and authentication headers
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
     optionsSuccessStatus: 200 // Some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 

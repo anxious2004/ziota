@@ -1,16 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import AuthService from '../services/AuthService';
+import axios from 'axios';
 import '../styles/SubjectDetail.css';
 
 const SubjectDetail = () => {
   const { subjectId, section } = useParams();
   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminCode, setAdminCode] = useState('');
   const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [uploadingFiles, setUploadingFiles] = useState(false);
   const [files, setFiles] = useState([]);
   const [notes, setNotes] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const fileInputRef = useRef(null);
+
+  // Cloudinary configuration (same as Personal.js)
+  const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dlcujlif7/upload";
+  const CLOUDINARY_UPLOAD_PRESET = "personal_space";
 
   // Subject data (in real app, this would come from backend)
   const subjects = {
@@ -29,21 +38,127 @@ const SubjectDetail = () => {
     : 'Practical exercises, lab manuals, and hands-on materials';
 
   useEffect(() => {
-    // Load files and notes for this subject/section
-    // In real app, this would be an API call
-    const savedData = localStorage.getItem(`${subjectId}_${section}`);
-    if (savedData) {
-      const data = JSON.parse(savedData);
-      setFiles(data.files || []);
-      setNotes(data.notes || '');
+    // Check authentication
+    if (!AuthService.isAuthenticated()) {
+      navigate('/');
+      return;
     }
+
+    const currentUser = AuthService.getCurrentUser();
+    setUser(currentUser);
+    loadSubjectData();
 
     // Check if admin is logged in (persist admin state across pages)
     const adminStatus = localStorage.getItem('isAdmin');
     if (adminStatus === 'true') {
       setIsAdmin(true);
     }
-  }, [subjectId, section]);
+  }, [subjectId, section, navigate]);
+
+  // Load subject data from backend (same pattern as Personal.js)
+  const loadSubjectData = async () => {
+    try {
+      const token = await AuthService.getApiToken();
+      const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
+
+      if (!token) {
+        console.error('❌ No valid token available');
+        return;
+      }
+
+      // Create a unique key for this subject-section combination
+      const sectionKey = `${subjectId}_${section}`;
+
+      const response = await axios.get(`${API_BASE_URL}/api/user/subject/${sectionKey}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (response.data.success) {
+        const data = response.data.data;
+        setFiles(data.files || []);
+        setNotes(data.notes || '');
+        console.log('✅ Loaded subject-section data from backend:', data);
+      }
+    } catch (error) {
+      console.error('❌ Failed to load subject-section data:', error);
+      // Set defaults on error
+      setFiles([]);
+      setNotes('');
+    }
+  };
+
+  // Save data to backend (same pattern as Personal.js)
+  const saveSubjectData = async (dataToUpdate) => {
+    try {
+      setIsSaving(true);
+      const token = await AuthService.getApiToken();
+      const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
+
+      if (!token) {
+        console.error('❌ No valid token available for saving');
+        return false;
+      }
+
+      // Create a unique key for this subject-section combination
+      const sectionKey = `${subjectId}_${section}`;
+
+      console.log('🔄 Saving subject-section data:', dataToUpdate);
+      const response = await axios.put(`${API_BASE_URL}/api/user/subject/${sectionKey}`, dataToUpdate, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      console.log('✅ Subject-section data saved successfully:', response.data);
+      return true;
+    } catch (error) {
+      console.error('❌ Failed to save subject-section data:', error);
+      console.error('❌ Error details:', error.response?.data);
+      return false;
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Debounced save for notes (same pattern as Personal.js)
+  const saveTimeoutRef = useRef(null);
+  const debouncedSaveNotes = useCallback((newNotes) => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    saveTimeoutRef.current = setTimeout(() => {
+      saveSubjectData({ notes: newNotes });
+    }, 2000);
+  }, []);
+
+  // Upload file to Cloudinary (same as Personal.js)
+  const uploadToCloudinary = async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+    try {
+      const response = await fetch(CLOUDINARY_URL, {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await response.json();
+
+      if (data.secure_url) {
+        return {
+          url: data.secure_url,
+          publicId: data.public_id,
+          originalName: file.name,
+          fileType: file.type || 'application/octet-stream',
+          fileSize: file.size
+        };
+      } else {
+        console.error('❌ Cloudinary upload failed:', data);
+        return null;
+      }
+    } catch (error) {
+      console.error('Upload failed:', error);
+      return null;
+    }
+  };
 
   // Admin authentication
   const handleAdminLogin = () => {
@@ -67,64 +182,68 @@ const SubjectDetail = () => {
     alert('👋 Admin logged out');
   };
 
-  // File upload function
+  // File upload function (updated to use backend API like Personal.js)
   const handleFileUpload = async (event) => {
     if (!isAdmin) return;
-    
-    const uploadedFiles = Array.from(event.target.files);
-    if (uploadedFiles.length === 0) return;
+
+    const selectedFiles = Array.from(event.target.files);
+    if (selectedFiles.length === 0) return;
 
     setUploadingFiles(true);
+    const newFiles = [...files];
 
-    try {
-      const newFiles = uploadedFiles.map(file => ({
-        id: Date.now() + Math.random(),
-        name: file.name,
-        size: file.size,
-        type: file.type,
-        uploadDate: new Date().toISOString(),
-        url: URL.createObjectURL(file)
-      }));
+    for (const file of selectedFiles) {
+      const uploadResult = await uploadToCloudinary(file);
+      if (uploadResult) {
+        const fileData = {
+          id: Date.now() + Math.random(),
+          name: uploadResult.originalName,
+          url: uploadResult.url,
+          publicId: uploadResult.publicId,
+          type: uploadResult.fileType,
+          size: uploadResult.fileSize,
+          uploadDate: new Date().toISOString()
+        };
+        newFiles.push(fileData);
+      }
+    }
 
-      const updatedFiles = [...files, ...newFiles];
-      setFiles(updatedFiles);
+    setFiles(newFiles);
+    const saveSuccess = await saveSubjectData({ files: newFiles });
 
-      // Save to localStorage (in real app, this would be an API call)
-      const dataToSave = { files: updatedFiles, notes };
-      localStorage.setItem(`${subjectId}_${section}`, JSON.stringify(dataToSave));
-
-      alert(`✅ ${uploadedFiles.length} file(s) uploaded successfully!`);
-    } catch (error) {
-      console.error('❌ Upload failed:', error);
+    if (saveSuccess) {
+      console.log('✅ Files uploaded and saved successfully');
+      alert(`✅ ${selectedFiles.length} file(s) uploaded successfully!`);
+    } else {
+      console.error('❌ Failed to save files to backend');
+      setFiles(files); // Revert on failure
       alert('❌ Upload failed. Please try again.');
-    } finally {
-      setUploadingFiles(false);
+    }
+
+    setUploadingFiles(false);
+    // Clear the input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
-  // Delete file function
-  const deleteFile = (fileId) => {
+  // Delete file function (updated to use backend API)
+  const deleteFile = async (fileId) => {
     if (!isAdmin) return;
-    
+
     if (window.confirm('Are you sure you want to delete this file?')) {
       const updatedFiles = files.filter(f => f.id !== fileId);
       setFiles(updatedFiles);
-      
-      // Save to localStorage
-      const dataToSave = { files: updatedFiles, notes };
-      localStorage.setItem(`${subjectId}_${section}`, JSON.stringify(dataToSave));
+      await saveSubjectData({ files: updatedFiles });
     }
   };
 
-  // Update notes
+  // Update notes (updated to use backend API with debouncing like Personal.js)
   const updateNotes = (newNotes) => {
     if (!isAdmin) return;
-    
+
     setNotes(newNotes);
-    
-    // Save to localStorage
-    const dataToSave = { files, notes: newNotes };
-    localStorage.setItem(`${subjectId}_${section}`, JSON.stringify(dataToSave));
+    debouncedSaveNotes(newNotes);
   };
 
   // Download file
@@ -138,8 +257,32 @@ const SubjectDetail = () => {
     document.body.removeChild(link);
   };
 
-  if (!subject) {
-    return <div className="loading">Subject not found</div>;
+  // Format file size (same as Personal.js)
+  const formatFileSize = (bytes) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  // Get file icon based on type (same as Personal.js)
+  const getFileIcon = (fileType, fileName = '') => {
+    const type = fileType?.toLowerCase() || '';
+    const name = fileName?.toLowerCase() || '';
+
+    if (type.startsWith('image/') || /\.(jpg|jpeg|png|gif|bmp|svg|webp)$/i.test(name)) return '🖼️';
+    if (type.includes('pdf') || name.endsWith('.pdf')) return '📕';
+    if (type.includes('word') || type.includes('document') || /\.(doc|docx)$/i.test(name)) return '📘';
+    if (type.includes('excel') || type.includes('spreadsheet') || /\.(xls|xlsx|csv)$/i.test(name)) return '📗';
+    if (type.includes('powerpoint') || type.includes('presentation') || /\.(ppt|pptx)$/i.test(name)) return '📙';
+    if (type.includes('zip') || type.includes('rar') || /\.(zip|rar|7z|tar|gz)$/i.test(name)) return '📦';
+    if (type.includes('text') || /\.(txt|md|rtf)$/i.test(name)) return '📄';
+    return '📁';
+  };
+
+  if (!user || !subject) {
+    return <div className="loading">Loading...</div>;
   }
 
   return (
@@ -152,6 +295,7 @@ const SubjectDetail = () => {
           </button>
           
           <div className="admin-section">
+            {isSaving && <span className="saving-indicator">💾 Saving...</span>}
             {!isAdmin ? (
               <button
                 className="admin-btn"
@@ -230,14 +374,12 @@ const SubjectDetail = () => {
               files.map(file => (
                 <div key={file.id} className="file-card">
                   <div className="file-icon">
-                    {file.type === 'application/pdf' ? '📕' : 
-                     file.type.includes('zip') ? '📦' : 
-                     file.type.includes('image') ? '🖼️' : '📘'}
+                    {getFileIcon(file.type, file.name)}
                   </div>
                   <div className="file-info">
                     <h4 className="file-name">{file.name}</h4>
                     <p className="file-meta">
-                      {(file.size / 1024).toFixed(1)} KB • {new Date(file.uploadDate).toLocaleDateString()}
+                      {formatFileSize(file.size)} • {new Date(file.uploadDate).toLocaleDateString()}
                     </p>
                   </div>
                   <div className="file-actions">
@@ -288,9 +430,10 @@ const SubjectDetail = () => {
             <div className="upload-area">
               <input
                 type="file"
+                ref={fileInputRef}
                 id="file-upload"
                 multiple
-                accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.zip,.rar"
+                accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.zip,.rar,.jpg,.jpeg,.png,.gif,.mp4,.mp3,*/*"
                 onChange={handleFileUpload}
                 style={{ display: 'none' }}
               />

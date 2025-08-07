@@ -78,39 +78,18 @@ const SubjectPage = () => {
 
 
 
-  // Load subject data from backend
+  // Load subject data from backend (fixed to use same token method as Personal.js)
   const loadSubjectData = async () => {
     try {
-      let token = await AuthService.getFirebaseToken();
+      const token = await AuthService.getApiToken();
       const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
-
-      // If Firebase token is not available, try localStorage token as fallback
-      if (!token) {
-        console.log('🔄 Firebase token not available, trying localStorage token...');
-        token = AuthService.getToken();
-        console.log('🔍 localStorage token:', token ? 'Found' : 'Not found');
-      }
-
-      console.log('🔍 Using token for API call:', token ? `${token.substring(0, 20)}...` : 'No token');
 
       if (!token) {
         console.error('❌ No valid token available');
-        // Load subject data from localStorage as fallback
-        const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-        const localSubjects = userData.subjects || [];
-        const localSubject = localSubjects.find(s => s.id === subjectId);
-
-        if (localSubject) {
-          setSubject(localSubject);
-          setNotes(userData.subjectNotes?.[subjectId] || '');
-          console.log('📱 Loaded subject data from localStorage');
-        } else {
-          setSubject({
-            name: subjectId,
-            icon: '📚',
-            id: subjectId
-          });
-        }
+        // Set default subject data
+        setSubject({ id: subjectId, name: subjectId, icon: '📚' });
+        setNotes('');
+        setFiles([]);
         return;
       }
 
@@ -127,30 +106,18 @@ const SubjectPage = () => {
       }
     } catch (error) {
       console.error('❌ Failed to load subject data:', error);
-
-      // Try to load from localStorage as fallback
-      const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-      const localSubjects = userData.subjects || [];
-      const localSubject = localSubjects.find(s => s.id === subjectId);
-
-      if (localSubject) {
-        setSubject(localSubject);
-        setNotes(userData.subjectNotes?.[subjectId] || '');
-        console.log('📱 Loaded subject data from localStorage fallback');
-      } else {
-        // Final fallback - create basic subject
-        setSubject({ id: subjectId, name: subjectId, icon: '📚' });
-        setNotes('');
-      }
+      // Set default subject data on error
+      setSubject({ id: subjectId, name: subjectId, icon: '📚' });
+      setNotes('');
       setFiles([]);
     }
   };
 
-  // Save data to backend
+  // Save data to backend (fixed to use same token method as Personal.js)
   const saveSubjectData = async (dataToUpdate) => {
     try {
       setIsSaving(true);
-      const token = await AuthService.getFirebaseToken();
+      const token = await AuthService.getApiToken();
       const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
 
       if (!token) {
