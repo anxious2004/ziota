@@ -9,7 +9,7 @@
     "start": "node server.js",
     "dev": "nodemon server.js",
     "build": "cd frontend && npm install && npm run build",
-    "vercel-build": "cd frontend && npm install && ESLINT_NO_DEV_ERRORS=true CI=false GENERATE_SOURCEMAP=false npm run build",
+    "vercel-build": "cd frontend && npm install && npm run build",
     "test-deployment": "node scripts/test-deployment.js"
   },
   "dependencies": {

@@ -25,6 +25,10 @@ const corsOptions = {
         'https://zio-one.vercel.app',
         'https://zio.vercel.app',
         'https://zio1.vercel.app',
+        'https://zio-gamma.vercel.app',
+        'https://ziota.vercel.app',
+        'https://ziota-app.vercel.app',
+        'https://ziota-frontend.vercel.app',
         /\.vercel\.app$/,
         // Allow any Vercel preview deployments
         /https:\/\/.*\.vercel\.app$/
