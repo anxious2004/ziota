@@ -26,10 +26,10 @@ const ANN = () => {
     const currentUser = AuthService.getCurrentUser();
     setUser(currentUser);
     loadSubjectData();
-  }, [navigate]);
+  }, [navigate, loadSubjectData]);
 
   // Load subject data from backend (same pattern as Personal.js)
-  const loadSubjectData = async () => {
+  const loadSubjectData = useCallback(async () => {
     try {
       const token = await AuthService.getApiToken();
       const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
@@ -55,10 +55,10 @@ const ANN = () => {
       setNotes('');
       setFiles([]);
     }
-  };
+  }, []);
 
   // Save data to backend (same pattern as Personal.js)
-  const saveSubjectData = async (dataToUpdate) => {
+  const saveSubjectData = useCallback(async (dataToUpdate) => {
     try {
       setIsSaving(true);
       const token = await AuthService.getApiToken();
@@ -82,7 +82,7 @@ const ANN = () => {
     } finally {
       setIsSaving(false);
     }
-  };
+  }, []);
 
   // Debounced save for notes (same pattern as Personal.js)
   const saveTimeoutRef = useRef(null);
@@ -94,7 +94,7 @@ const ANN = () => {
     saveTimeoutRef.current = setTimeout(() => {
       saveSubjectData({ notes: newNotes });
     }, 2000);
-  }, []);
+  }, [saveSubjectData]);
 
   // Handle notes change
   const handleNotesChange = (e) => {
