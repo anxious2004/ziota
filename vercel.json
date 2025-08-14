@@ -2,10 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "package.json",
-      "use": "@vercel/node",
+      "src": "server.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
       "config": {
-        "includeFiles": ["frontend/build/**"]
+        "distDir": "build"
       }
     }
   ],
@@ -19,10 +23,16 @@
       "dest": "/server.js"
     },
     {
+      "src": "/static/(.*)",
+      "dest": "/frontend/build/static/$1"
+    },
+    {
+      "src": "/(.*\\.(js|css|ico|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot))",
+      "dest": "/frontend/build/$1"
+    },
+    {
       "src": "/(.*)",
-      "dest": "/server.js"
+      "dest": "/frontend/build/index.html"
     }
-  ],
-  "installCommand": "npm install && cd frontend && npm install && npm run build && cd ..",
-  "buildCommand": "echo 'Build completed'"
+  ]
 }
