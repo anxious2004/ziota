@@ -53,7 +53,8 @@ const SubjectDetail = () => {
     if (adminStatus === 'true') {
       setIsAdmin(true);
     }
-  }, [subjectId, section, navigate, loadSubjectData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [subjectId, section, navigate]);
 
   // Load subject data from backend (same pattern as Personal.js)
   const loadSubjectData = useCallback(async () => {
@@ -127,7 +128,8 @@ const SubjectDetail = () => {
     saveTimeoutRef.current = setTimeout(() => {
       saveSubjectData({ notes: newNotes });
     }, 2000);
-  }, [saveSubjectData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Upload file to Cloudinary (same as Personal.js)
   const uploadToCloudinary = async (file) => {
